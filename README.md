@@ -8,7 +8,7 @@
 
 1. [src](https://github.com/Yun-Yoseob/RWK_Performance_Tasks/tree/master/searchProject/src)
 
-자바 소스가 담겨있는 곳으로 [RwkCommonController.java]((https://github.com/Yun-Yoseob/RWK_Performance_Tasks/blob/master/searchProject/src/com/rwk/common/controller/RwkCommonController.java)) 파일(Controller)과 log4j.properties 파일이 있는 디렉토리입니다.
+자바 소스가 담겨있는 곳으로 [RwkCommonController.java](https://github.com/Yun-Yoseob/RWK_Performance_Tasks/blob/master/searchProject/src/com/rwk/common/controller/RwkCommonController.java) 파일(Controller)과 log4j.properties 파일이 있는 디렉토리입니다.
 
 2. [WebContent](https://github.com/Yun-Yoseob/RWK_Performance_Tasks/tree/master/searchProject/WebContent)
 
