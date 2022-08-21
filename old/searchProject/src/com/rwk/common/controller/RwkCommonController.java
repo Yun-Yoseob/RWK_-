@@ -1,55 +1,64 @@
 package com.rwk.common.controller;
 
-// Servlet
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-
-//java.io
+// java.io
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.IOException;
 
-//URL
+import javax.servlet.RequestDispatcher;
+// ì„œë¸”ë¦¿
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+// URL
 import org.apache.log4j.Logger;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 
 
+/**
+ * Servlet implementation class RwkCommonController
+ */
+@WebServlet("/main")
 public class RwkCommonController extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 	private static Logger logger=Logger.getLogger(RwkCommonController.class);
-	
-	public RwkCommonController() {
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public RwkCommonController() {
         super();
     }
-	
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
-		logger.info("doGet ÇÔ¼ö ÁøÀÔ >>> : ");
+		logger.info("doGet í•¨ìˆ˜ ì§„ì… >>> : ");
 		request.setCharacterEncoding("UTF-8");
-		response.setContentType("application/json");
-		response.setCharacterEncoding("UTF-8");
-		
+		response.setContentType("text/html; charset=UTF-8");
 		int countPerPage=0;
 		int currentPage=0;
 		String result=null;
 		
 		try{
-		    // ÇöÀç ÆäÀÌÁö : ÇÊ¼ö
-		    // ÇöÀç ÆäÀÌÁö ¹øÈ£(n>0)
+		    // í˜„ì¬ í˜ì´ì§€ : í•„ìˆ˜
+		    // í˜„ì¬ í˜ì´ì§€ ë²ˆí˜¸(n>0)
 		    String str_currentPage=request.getParameter("currentPage");
 		    if(!str_currentPage.equals("NaN")){
 		    	currentPage=Integer.valueOf(str_currentPage);
 		    	logger.info("currentPage >>> : "+currentPage);
 		    }
 		    
-		    // ÆäÀÌÁö´ç Ãâ·Â °³¼ö :ÇÊ¼ö
+		    // í˜ì´ì§€ë‹¹ ì¶œë ¥ ê°œìˆ˜ :í•„ìˆ˜
 		    // 0<n<100 
 		    String str_countPerPage=request.getParameter("countPerPage");
 		    if(!str_countPerPage.equals("NaN")) {
@@ -57,22 +66,22 @@ public class RwkCommonController extends HttpServlet {
 		    	logger.info("countPerPage >>> : "+countPerPage);
 		    }
 		    
-		    // °Ë»ö °á°ú Çü½Ä : ¼±ÅÃ
+		    // ê²€ìƒ‰ ê²°ê³¼ í˜•ì‹ : ì„ íƒ
 		    String resultType=request.getParameter("resultType");
 		    logger.info("resultType >>> : "+resultType);
 		    
-		    // api ½ÂÀÎ Å°
-		    // ½ÅÃ»½Ã ¹ß±Ş¹ŞÀº ½ÂÀÎ Å° : ÇÊ¼ö
+		    // api ìŠ¹ì¸ í‚¤
+		    // ì‹ ì²­ì‹œ ë°œê¸‰ë°›ì€ ìŠ¹ì¸ í‚¤ : í•„ìˆ˜
 		    String confmKey=request.getParameter("confmKey");
 		    logger.info("confmKey >>> : "+confmKey);
 		    
-		    // Å°¿öµå(ÁÖ¼Ò °Ë»ö¾î) : ÇÊ¼ö
+		    // í‚¤ì›Œë“œ(ì£¼ì†Œ ê²€ìƒ‰ì–´) : í•„ìˆ˜
 		    String keyword=request.getParameter("keyword");
 		    logger.info("keyword >>> : "+keyword);
 		    
 		    if(str_currentPage==null || str_countPerPage==null || resultType==null ||  confmKey==null || keyword==null) return;
 		    
-		    // API È£Ãâ
+		    // API í˜¸ì¶œ
 		    String apiUrl="https://business.juso.go.kr/addrlink/addrLinkApi.do?currentPage="+currentPage+"&countPerPage="+countPerPage+"&keyword="+URLEncoder.encode(keyword,"UTF-8")+"&confmKey="+confmKey+"&resultType="+resultType;
 		    logger.info("apiUrl >> : \n"+apiUrl);
 		    
@@ -82,7 +91,7 @@ public class RwkCommonController extends HttpServlet {
 		    BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream(),"UTF-8"));
 		    logger.info("BufferedReader br >>> : "+br);
 		    	
-		    // ³»¿ë ¹Ş±â
+		    // ë‚´ìš© ë°›ê¸°
 		    StringBuffer sb=new StringBuffer();
 		    String tempStr=null;
 		    
@@ -97,16 +106,21 @@ public class RwkCommonController extends HttpServlet {
 		    br.close();
 		    
 		    result=sb.toString();
-		    response.getWriter().write(result);
-
-		    /*
 		    request.setAttribute("result", result);
-		    RequestDispatcher rd=request.getRequestDispatcher("/index.html");
+		    RequestDispatcher rd=request.getRequestDispatcher("/WEB-INF/searchResult.jsp");
 		    logger.info("rd >>> : "+rd);
 		    rd.forward(request, response);
-		    */
 		}catch(Exception e){
 			logger.info("Exception e >>> : "+e);
 		}
 	}
+	
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+
 }
