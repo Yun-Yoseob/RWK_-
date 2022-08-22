@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>도로명주소 검색</title>
 <script src="/searchProject/js/check.js"></script>
+<script src="/searchProject/js/jsonParse.js"></script>
 <script type="text/javascript">
 	function search(){
 		var bool=false;
@@ -16,68 +17,48 @@
 	    var resultType=document.getElementById("resultType").value;
 	    var confmKey=document.getElementById("confmKey").value;
 	    
+	    /*
 	    console.log("현재 페이지 번호 >>> : "+currentPage);
 	    console.log("페이지당 출력 개수  >>> : "+countPerPage);
 	    console.log("키워드 >>> : "+keyword);
 	    console.log("검색 결과 형식 >>> : "+resultType);
 	    console.log("api 키 >>> : "+confmKey);
+	    */
 	    
 		bool=check(currentPage,countPerPage, keyword);
-		alert("검색가능여부 >>> : "+bool);
+		console.log("검색가능여부 >>> : "+bool);
 		
 		// HTTP request 만들기
 		if(window.XMLHttpRequest){
+			// 익스플로러 7과 그 이상의 버전, 크롬, 파이어폭스, 사파리, 오페라
 			xmlHttpReq=new XMLHttpRequest();
-			alert("1. HTTP request 만들기 >>> : "+xmlHttpReq);
+			console.log("1. HTTP request 만들기 >>> : "+xmlHttpReq);
 		}else if(window.ActiveXObject){
+			// 익스플로러 구형 버전 5와 6 버전
+			// http://www.tcpschool.com/ajax/ajax_server_xmlhttprequest
 			xmlHttpReq=new ActiveXObject("MicrosoftXMLHTTP");
-			alert("xmlHttpReq >>> : "+xmlHttpReq);
+			console.log("xmlHttpReq >>> : "+xmlHttpReq);
 		}
 		
-		console.log("xmlHttpReq >>> : "+xmlHttpReq);
-		
-		// readyState 확인
-		/*
-		UNSENT : 0
-		OPENED : 1
-		*/
-		console.log("xmlHttpReq.readyState >>> : "+xmlHttpReq.readyState);	
-		// 0
-		
+		// GET 방식 : query string으로 보내기
 		xmlHttpReq.open('GET', '/searchProject/RwkCommonController.do?currentPage='+currentPage
 						+'&countPerPage='+countPerPage+'&keyword='+keyword
 						+'&resultType='+resultType+'&confmKey='+confmKey);
 		xmlHttpReq.send();
-		
-		// readyState 확인
-		console.log("xmlHttpReq.readyState >>> : "+xmlHttpReq.readyState);
-		// 1
-		
-		if(xmlHttpReq.readyState==1){
-			// 현재 상태 보기
-			/*
-			UNSENT : 0
-			OPENED : 0
-			LOADING : 200
-			DONE  : 200S
-			*/
-			var xmlHttpReqStatus=xmlHttpReq.status;
-			var staustext=xmlHttpReq.statusText;
+					
+		// readystatechange 이벤트는 HTTP 요청의 현재 상태를 나타내는  readyState 프로퍼티가 변경될 때 마다 발생
+		xmlHttpReq.onreadystatechange=function(){
+			if(xmlHttpReq.readyState!==XMLHttpRequest.DONE) return;
 			
-			console.log("xmlHttpReqStatus >>> : "+xmlHttpReqStatus);
-			// 0
-			console.log("staustext >>> : "+staustext);
-			
-			var jsonStr=xmlHttpReq.response;
-			console.log("jsonStr >>> : "+jsonStr);
-			console.log("typeof(jsonStr) >>> : "+typeof(jsonStr));
-			
-			var obj=JSON.parse(jsonStr);
-			console.log("json 파싱 >>>  : "+obj);
-			console.log("typeof(obj) >>> : "+typeof(obj));
-		}
-		
-		
+			// status가 200이면 정상 응답
+			if(xmlHttpReq.status===200){
+				// alert(typeof(xmlHttpReq.response));
+				jsonParse(xmlHttpReq.response);
+				
+			}else{
+				console.error('Error', xmlHttpReq.status, xmlHttpReq.statusText);
+			}
+		};
 	}
 </script>
 </head>
@@ -107,5 +88,12 @@
 <!-- api 승인 키 : 사용기간 : 2022-08-18 ~ 2022-08-25 -->
 <input type="hidden" id="confmKey" name="confmKey" value="devU01TX0FVVEgyMDIyMDgxODIzMjYwODExMjg5OTY=">
 <!-- api key : devU01TX0FVVEgyMDIyMDgxODIzMjYwODExMjg5OTY= -->
+
+<br>
+<hr>
+<br>
+
+<h3>주소 검색 결과</h3>
+<div id="searchResult"></div>
 </body>
 </html>

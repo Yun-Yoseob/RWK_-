@@ -4,7 +4,6 @@ package com.rwk.common.controller;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 
 //java.io
@@ -12,15 +11,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.IOException;
 
 //URL
 import org.apache.log4j.Logger;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
-
 
 public class RwkCommonController extends HttpServlet {
 	private static Logger logger=Logger.getLogger(RwkCommonController.class);
@@ -33,12 +28,14 @@ public class RwkCommonController extends HttpServlet {
 			throws ServletException, IOException {
 		logger.info("doGet 함수 진입 >>> : ");
 		request.setCharacterEncoding("UTF-8");
-		response.setContentType("application/json");
-		response.setCharacterEncoding("UTF-8");
+		response.setContentType("text/html;charset=UTF-8");
+		
+		PrintWriter out=response.getWriter();
 		
 		int countPerPage=0;
 		int currentPage=0;
 		String result=null;
+		
 		
 		try{
 		    // 현재 페이지 : 필수
@@ -46,7 +43,7 @@ public class RwkCommonController extends HttpServlet {
 		    String str_currentPage=request.getParameter("currentPage");
 		    if(!str_currentPage.equals("NaN")){
 		    	currentPage=Integer.valueOf(str_currentPage);
-		    	logger.info("currentPage >>> : "+currentPage);
+		    	// logger.info("currentPage >>> : "+currentPage);
 		    }
 		    
 		    // 페이지당 출력 개수 :필수
@@ -54,33 +51,33 @@ public class RwkCommonController extends HttpServlet {
 		    String str_countPerPage=request.getParameter("countPerPage");
 		    if(!str_countPerPage.equals("NaN")) {
 		    	countPerPage=Integer.valueOf(str_countPerPage);
-		    	logger.info("countPerPage >>> : "+countPerPage);
+		    	// logger.info("countPerPage >>> : "+countPerPage);
 		    }
 		    
 		    // 검색 결과 형식 : 선택
 		    String resultType=request.getParameter("resultType");
-		    logger.info("resultType >>> : "+resultType);
+		    // logger.info("resultType >>> : "+resultType);
 		    
 		    // api 승인 키
 		    // 신청시 발급받은 승인 키 : 필수
 		    String confmKey=request.getParameter("confmKey");
-		    logger.info("confmKey >>> : "+confmKey);
+		    // logger.info("confmKey >>> : "+confmKey);
 		    
 		    // 키워드(주소 검색어) : 필수
 		    String keyword=request.getParameter("keyword");
-		    logger.info("keyword >>> : "+keyword);
+		    // logger.info("keyword >>> : "+keyword);
 		    
 		    if(str_currentPage==null || str_countPerPage==null || resultType==null ||  confmKey==null || keyword==null) return;
 		    
 		    // API 호출
 		    String apiUrl="https://business.juso.go.kr/addrlink/addrLinkApi.do?currentPage="+currentPage+"&countPerPage="+countPerPage+"&keyword="+URLEncoder.encode(keyword,"UTF-8")+"&confmKey="+confmKey+"&resultType="+resultType;
-		    logger.info("apiUrl >> : \n"+apiUrl);
+		    // logger.info("apiUrl >> : \n"+apiUrl);
 		    
 		    URL url=new URL(apiUrl);
-		    logger.info("url >>> : \n"+url);
+		    // logger.info("url >>> : \n"+url);
 		    
 		    BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream(),"UTF-8"));
-		    logger.info("BufferedReader br >>> : "+br);
+		    // logger.info("BufferedReader br >>> : "+br);
 		    	
 		    // 내용 받기
 		    StringBuffer sb=new StringBuffer();
@@ -93,20 +90,21 @@ public class RwkCommonController extends HttpServlet {
 		    	sb.append(tempStr);
 		    	// logger.info("StringBuffer sb >>> : "+sb);
 		    }
-		    logger.info("StringBuffer sb >>> : "+sb);
+		    // logger.info("StringBuffer sb >>> : "+sb);
 		    br.close();
 		    
 		    result=sb.toString();
-		    response.getWriter().write(result);
+		    logger.info("result >>> : "+result);
 
-		    /*
-		    request.setAttribute("result", result);
-		    RequestDispatcher rd=request.getRequestDispatcher("/index.html");
-		    logger.info("rd >>> : "+rd);
-		    rd.forward(request, response);
-		    */
+		    out.println(result);
+		    
 		}catch(Exception e){
 			logger.info("Exception e >>> : "+e);
 		}
 	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+			throws ServletException, IOException {
+
+	}	
 }
