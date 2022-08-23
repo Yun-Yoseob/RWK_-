@@ -27,6 +27,8 @@
 	    
 		bool=check(currentPage,countPerPage, keyword);
 		console.log("검색가능여부 >>> : "+bool);
+
+		if(!bool) return;
 		
 		// HTTP request 만들기
 		if(window.XMLHttpRequest){
